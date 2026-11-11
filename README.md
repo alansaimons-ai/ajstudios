@@ -13,4 +13,4 @@ Slogan: **Um novo olhar transforma seu negócio**
 ## Estrutura
 
 - `index.html` — a página inteira (estilos, componentes React e dados dos segmentos).
-- `img/` — fotos usadas nos segmentos de barbearia e pet shop.
+- `img/` — fotos de cada segmento: `<segmento>.jpg` (topo), `<segmento>-2.jpg` (ambiente) e `<segmento>-3.jpg` (detalhe).

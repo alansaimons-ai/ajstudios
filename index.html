@@ -1,0 +1,752 @@
+<title>AJ STUDIO</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap">
+<style>
+/* Layout: o simulador é o herói — formulário curto à esquerda, celular vivo à direita sobre a esfera da marca. */
+:root{
+  --bg:#FBF7F2; --surface:#FFFFFF; --ink:#2B2A2E; --mute:#6A6670; --line:#E6DFD6;
+  --btn:#2B2A2E; --btn-ink:#FBF7F2; --accent:#7446BF; --danger:#B3261E;
+  --a1:#FFA36C; --a2:#F0728F; --a3:#8E5BD0; --a4:#2B2A7C; --device:#1B1A1E;
+  --display:"Outfit","Avenir Next","Segoe UI",sans-serif;
+  --body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --serif:"Playfair Display",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141218; --surface:#1E1B24; --ink:#F4EFE9; --mute:#ABA5B2; --line:#342F3C;
+  --btn:#F4EFE9; --btn-ink:#141218; --accent:#BC9AF2; --danger:#FF8A80; --device:#0B0A0D; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#141218; --surface:#1E1B24; --ink:#F4EFE9; --mute:#ABA5B2; --line:#342F3C;
+  --btn:#F4EFE9; --btn-ink:#141218; --accent:#BC9AF2; --danger:#FF8A80; --device:#0B0A0D; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.02em;line-height:1.08}
+p{margin:0}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:22px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.brand b{display:block;font-family:var(--display);font-weight:500;font-size:1.25rem;letter-spacing:.14em;line-height:1}
+.brand small{display:block;font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);margin-top:5px}
+.nav{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.nav a{color:var(--ink);text-decoration:none;font-size:.92rem}
+.nav a:hover{color:var(--accent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--btn);color:var(--btn-ink);border:0;border-radius:999px;padding:13px 24px;font-weight:600;font-size:.95rem;text-decoration:none;transition:transform .15s}
+.btn:hover{transform:translateY(-1px)}
+.nav a.btn{color:var(--btn-ink);padding:10px 18px;font-size:.88rem}
+.linkbtn{background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;font-size:.88rem}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:center;padding-block:28px 72px}
+.slogan{font-family:var(--display);font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:18px}
+.hero h1{font-weight:600;font-size:clamp(2.2rem,5.2vw,3.7rem)}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--a1),var(--a2) 45%,var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{color:var(--mute);font-size:1.08rem;max-width:34em;margin-top:18px}
+.builder{margin-top:30px;display:flex;flex-direction:column;gap:22px}
+.field label,.legend{display:block;font-weight:600;font-size:.92rem;margin-bottom:8px}
+.field input,.field select,.field textarea{width:100%;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;font-size:1rem}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);outline:none}
+.field input[type=file]{padding:10px 12px;font-size:.9rem}
+.big input{font-size:1.15rem;padding:17px 18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:9px 15px;font-size:.92rem;transition:border-color .15s}
+.chip:hover{border-color:var(--mute)}
+.chip[aria-pressed="true"]{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
+.actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.note{color:var(--mute);font-size:.88rem}
+
+.stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:16px;min-width:0}
+.orb{position:absolute;width:min(440px,112%);aspect-ratio:1;border-radius:50%;top:10%;left:50%;transform:translateX(-50%);background:linear-gradient(155deg,var(--a1) 8%,var(--a2) 40%,var(--a3) 68%,var(--a4) 95%);box-shadow:0 40px 60px -30px color-mix(in srgb,var(--a4) 55%,transparent)}
+.hint{position:relative;font-size:.85rem;color:var(--mute);text-align:center;max-width:26em}
+
+/* ===== celular ===== */
+.phone{position:relative;width:min(320px,100%);aspect-ratio:320/670;background:var(--device);border-radius:48px;padding:10px;box-shadow:0 30px 50px -22px rgba(20,16,40,.55),0 0 0 1px var(--line)}
+.screen{--p-line:color-mix(in srgb,var(--p-ink) 13%,transparent);--p-mute:color-mix(in srgb,var(--p-ink) 64%,var(--p-bg));--p-gline:color-mix(in srgb,var(--p-accent) 45%,transparent);position:relative;height:100%;border-radius:38px;overflow:hidden;background:var(--p-bg);color:var(--p-ink);display:flex;flex-direction:column;font-family:var(--display);font-size:13px;line-height:1.4;animation:pop .4s ease-out}
+@keyframes pop{from{opacity:.2;transform:scale(.97)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.stag>*{animation:rise .45s both;animation-delay:calc(var(--i,0)*70ms + .1s)}
+.screen button{border:0;background:none;padding:0;color:inherit}
+.sbar{display:flex;justify-content:space-between;padding:10px 24px 2px;font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
+.phead{display:flex;align-items:center;gap:8px;padding:8px 14px 10px;border-bottom:1px solid var(--p-line)}
+.wm{flex:1;min-width:0;display:flex;align-items:center;gap:8px;color:var(--p-accent)}
+.wm b{display:block;font-family:var(--serif);font-weight:600;font-size:14px;letter-spacing:.08em;text-transform:uppercase;line-height:1.1;overflow-wrap:anywhere}
+.wm small{display:block;font-size:8px;letter-spacing:.34em;text-transform:uppercase;margin-top:3px}
+.screen .burger{width:30px;height:30px;display:grid;place-items:center}
+.pscroll{flex:1;overflow-y:auto;position:relative;scrollbar-width:none;overscroll-behavior:contain}
+.pscroll::-webkit-scrollbar,.hsc::-webkit-scrollbar{display:none}
+.hsc{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+
+.hero2{position:relative;min-height:244px;padding:22px 14px 20px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;color:#fff;background-color:var(--p-hbg);background-repeat:no-repeat;overflow:hidden}
+.hero2.noph{background-image:radial-gradient(circle at 80% 48%,var(--p-glow) 0,transparent 62%)}
+.hero2 h4{font-size:28px;line-height:1.02;font-weight:700;margin:0 0 10px;max-width:60%;letter-spacing:-.01em;animation:rise .5s both .1s}
+.hero2 h4 span{display:block;color:var(--p-accent)}
+.hero2 p{font-size:11.5px;opacity:.82;max-width:52%;margin-bottom:14px;animation:rise .5s both .2s}
+.hero2 .gold{animation:rise .5s both .3s}
+.hart{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:122px;color:var(--p-accent)}
+.screen .gold{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,color-mix(in srgb,var(--p-accent) 78%,#fff),var(--p-accent));color:var(--p-on);border-radius:6px;padding:10px 14px;font-weight:600;font-size:12px}
+.screen .gold:active{transform:scale(.97)}
+.screen .outl{border:1px solid var(--p-accent);color:var(--p-accent);border-radius:5px;padding:7px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+.sect{padding:18px 14px 2px;text-align:center}
+.sect>svg{color:var(--p-accent)}
+.orn{display:flex;align-items:center;gap:10px;color:var(--p-accent);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+.orn::before,.orn::after{content:"";flex:1;height:1px;background:var(--p-gline)}
+.sect p{font-size:11px;color:var(--p-mute);margin-top:6px}
+.cards{padding:10px 14px 6px;scroll-snap-type:x proximity}
+.svc{flex:none;width:116px;background:var(--p-card);border:1px solid var(--p-gline);border-radius:10px;padding:14px 8px 10px;text-align:center;display:grid;gap:4px;justify-items:center;align-content:start;scroll-snap-align:start}
+.svc>svg{color:var(--p-accent)}
+.svc strong{font-size:12.5px;line-height:1.15;font-weight:600}
+.pr{color:var(--p-accent);font-weight:700;font-variant-numeric:tabular-nums}
+.svc .pr{font-size:17px}
+.svc .pr small{font-size:10px;font-weight:500}
+.svc .ds{font-size:10.5px;color:var(--p-mute);line-height:1.3;min-height:2.6em}
+.screen .svc .outl{margin-top:4px}
+.screen button.svc[aria-pressed="true"]{border:1.5px solid var(--p-accent);background:color-mix(in srgb,var(--p-accent) 12%,var(--p-card))}
+.screen button.svc{padding:14px 8px 10px;background:var(--p-card);border:1px solid var(--p-line)}
+.stepper{display:flex;align-items:center;gap:8px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:4px}
+.screen .stepper button{width:24px;height:24px;border-radius:50%;background:var(--p-accent);color:var(--p-on);font-weight:700;line-height:1}
+
+.featrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:12px 14px;padding:12px 0;border-top:1px solid var(--p-line);border-bottom:1px solid var(--p-line)}
+.featrow div{padding:0 5px;text-align:center;border-left:1px solid var(--p-gline);display:grid;gap:3px;justify-items:center;align-content:start}
+.featrow div:first-child{border-left:0}
+.featrow svg{color:var(--p-accent)}
+.featrow strong{font-size:10.5px;line-height:1.2;font-weight:600}
+.featrow span{font-size:9.5px;color:var(--p-mute);line-height:1.25}
+.about{display:grid;grid-template-columns:minmax(0,1fr) 98px;gap:10px;padding:8px 14px 10px;align-items:center}
+.ttl{font-family:var(--serif);color:var(--p-accent);font-size:15px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 6px;font-weight:600}
+.about p{font-size:11.5px;margin-bottom:8px}
+.im{border-radius:8px;background:var(--p-hero) center/cover;display:grid;place-items:center;color:#fff}
+.about .im{height:124px}
+.ready{margin:8px 14px;background:var(--p-card);border:1px solid var(--p-line);border-radius:10px;padding:14px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px}
+.ready>svg{color:var(--p-accent)}
+.ready strong{font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.ready p{font-size:11px;color:var(--p-mute);margin:2px 0 10px}
+.psec{padding:12px 14px}
+.gal .im{flex:none;width:128px;height:96px}
+.gal .im:nth-child(3){filter:hue-rotate(-18deg) brightness(1.1)}
+.pinfo{background:var(--p-card);border:1px solid var(--p-line);border-radius:10px;padding:12px;display:grid;gap:10px;font-size:12px}
+.pinfo div{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.pinfo svg{color:var(--p-accent)}
+.pinfo small{display:block;color:var(--p-mute);font-size:9.5px;text-transform:uppercase;letter-spacing:.1em}
+.screen .wa{width:100%;background:#1FA855;color:#fff;border-radius:8px;padding:11px;font-weight:600;font-size:12.5px;margin-top:10px}
+.pfoot{text-align:center;color:var(--p-mute);font-size:10px;padding:6px 14px 18px}
+.screen .cartbar{margin:0 10px 8px;width:calc(100% - 20px);background:var(--p-accent);color:var(--p-on);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;font-weight:600;font-size:12.5px;animation:rise .3s both}
+.tabbar{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--p-line);background:var(--p-bg);padding:7px 4px 12px}
+.screen .tabbar button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9.5px;color:var(--p-mute)}
+.screen .tabbar button.on{color:var(--p-accent)}
+
+/* telas internas */
+.vhead{display:flex;align-items:center;padding:8px 10px 12px;border-bottom:1px solid var(--p-gline)}
+.vhead h4{flex:1;text-align:center;margin:0 30px 0 0;font-family:var(--serif);color:var(--p-accent);font-size:18px;font-weight:600}
+.screen .vhead button{width:30px;height:30px;display:grid;place-items:center}
+.step{font-size:12.5px;color:var(--p-accent);font-weight:600;margin:14px 14px 8px}
+.cards.tight{padding-top:0;padding-bottom:0}
+.pros{padding:2px 14px}
+.screen .pro{flex:none;width:60px;text-align:center;font-size:11px}
+.pro .av{width:50px;height:50px;border-radius:50%;border:1.5px solid var(--p-line);background:var(--p-card);display:grid;place-items:center;margin:2px auto 4px;font-family:var(--serif);font-size:18px;color:var(--p-accent)}
+.pro[aria-pressed="true"] .av{border-color:var(--p-accent);box-shadow:0 0 0 2px var(--p-bg),0 0 0 3.5px var(--p-accent)}
+.pro small{display:block;color:var(--p-mute);font-size:9.5px}
+.cal{margin:0 14px;background:var(--p-card);border:1px solid var(--p-line);border-radius:10px;padding:10px 6px}
+.cal .mh{display:flex;justify-content:space-between;align-items:center;color:var(--p-accent);font-weight:600;font-size:13px;padding:0 4px 6px;text-transform:capitalize}
+.screen .cal .mh button{width:26px;height:26px;display:grid;place-items:center;color:var(--p-ink)}
+.cal .g{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11.5px;row-gap:2px}
+.cal .g span{color:var(--p-mute);font-size:10px;padding:2px 0}
+.screen .cal .g button{width:27px;height:27px;border-radius:50%;margin:0 auto;font-variant-numeric:tabular-nums}
+.screen .cal button:disabled{opacity:.28;cursor:default}
+.screen .cal .g button[aria-pressed="true"]{background:var(--p-accent);color:var(--p-on);font-weight:700}
+.times{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:0 14px}
+.times.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.screen .times button{border:1px solid var(--p-gline);border-radius:7px;padding:8px 2px;font-size:11.5px;color:var(--p-accent);font-weight:600;background:var(--p-card);font-variant-numeric:tabular-nums}
+.screen .times button:disabled{border-color:var(--p-line);color:var(--p-mute);opacity:.5;cursor:default}
+.screen .times button[aria-pressed="true"]{background:var(--p-accent);color:var(--p-on)}
+.screen .bigbtn{margin:16px 14px 18px;width:calc(100% - 28px);justify-content:space-between;padding:13px 14px;font-size:13.5px;border-radius:8px}
+.screen .bigbtn:disabled{opacity:.4;cursor:not-allowed}
+.bigbtn span{display:flex;align-items:center;gap:10px}
+.line{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--p-line);margin:0 14px}
+.line div:first-child{flex:1;min-width:0}
+.line .stepper{margin:0}
+.total{display:flex;justify-content:space-between;font-weight:700;padding:12px 14px 0;font-size:14px}
+.empty{padding:30px 20px;text-align:center;color:var(--p-mute)}
+
+.done{padding:22px 14px 0;text-align:center}
+.okc{width:62px;height:62px;border-radius:50%;border:2px solid var(--p-accent);color:var(--p-accent);display:grid;place-items:center;margin:0 auto 12px;animation:okin .5s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes okin{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+.done h4{font-family:var(--serif);font-size:23px;line-height:1.1;margin:0 0 6px;font-weight:600}
+.done>p{font-size:11.5px;color:var(--p-mute);margin-bottom:14px}
+.rows{background:var(--p-card);border:1px solid var(--p-line);border-radius:10px;padding:2px 12px;text-align:left}
+.rows div{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--p-line);font-size:12.5px}
+.rows div:last-child{border-bottom:0}
+.rows svg{color:var(--p-accent)}
+.rows small{display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--p-mute)}
+.wac{margin-top:10px;background:var(--p-card);border:1px solid var(--p-line);border-radius:10px;padding:12px;display:grid;grid-template-columns:auto 1fr;gap:10px;text-align:left;font-size:11px;color:var(--p-mute);align-items:center}
+.wac i{width:34px;height:34px;border-radius:50%;background:#1FA855;color:#fff;display:grid;place-items:center}
+.wac strong{display:block;color:#35C46B;font-size:12.5px}
+.screen .done .bigbtn{margin:14px 0 6px;width:100%}
+.screen .lnk{color:var(--p-accent);font-size:12px;padding:8px;margin-bottom:14px}
+
+.pmenu{position:absolute;inset:0;background:var(--p-bg);z-index:6;padding:50px 22px 20px;display:flex;flex-direction:column;gap:4px;animation:pop .2s}
+.screen .pmenu button{text-align:left;font-family:var(--serif);font-size:22px;padding:11px 0;border-bottom:1px solid var(--p-line)}
+.screen .pmenu .x{position:absolute;top:14px;right:16px;border:0;font-size:24px;padding:4px 8px;color:var(--p-accent)}
+.toast{position:absolute;left:12px;right:12px;bottom:74px;background:var(--p-ink);color:var(--p-bg);border-radius:10px;padding:10px 12px;font-size:12px;text-align:center;z-index:7;animation:rise .25s both}
+
+/* ilustrações animadas (segmentos ainda sem foto) */
+.pole{position:relative;width:26px;height:120px;margin:0 auto;border-radius:13px;overflow:hidden;box-shadow:0 0 0 3px var(--p-accent)}
+.pole i{position:absolute;inset:-60px 0;background:repeating-linear-gradient(45deg,#fff 0 8px,#B3312B 8px 16px,#fff 16px 24px,#27457A 24px 32px);animation:pole 1.4s linear infinite}
+@keyframes pole{to{transform:translateY(45.25px)}}
+.gear{transform-box:fill-box;transform-origin:center;animation:spin 7s linear infinite}
+.gear.rev{animation-direction:reverse;animation-duration:4.5s}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lift{animation:lift 1.3s ease-in-out infinite alternate}
+@keyframes lift{from{transform:translateY(8px) rotate(-6deg)}to{transform:translateY(-6px) rotate(6deg)}}
+.eq{display:flex;gap:5px;align-items:flex-end;height:50px;justify-content:center;margin-top:12px}
+.eq i{width:8px;height:100%;background:var(--p-accent);transform-origin:bottom;animation:eq .7s ease-in-out infinite alternate}
+@keyframes eq{from{transform:scaleY(.2)}to{transform:scaleY(1)}}
+.steam path{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;opacity:0;animation:steam 2.6s ease-in-out infinite}
+.steam path:nth-child(2){animation-delay:.5s}.steam path:nth-child(3){animation-delay:1s}
+@keyframes steam{0%{opacity:0;transform:translateY(8px)}45%{opacity:.85}100%{opacity:0;transform:translateY(-8px)}}
+.arch{position:relative;width:92px;height:128px;margin:0 auto;border-radius:46px 46px 10px 10px;background:var(--p-hero);overflow:hidden}
+.arch .waves{position:absolute;left:0;top:20px;width:240px;height:90px;animation:flow 4s linear infinite}
+@keyframes flow{to{transform:translateX(-60px)}}
+.tw{position:absolute;color:var(--p-accent);animation:tw 1.8s ease-in-out infinite}
+@keyframes tw{0%,100%{transform:scale(.3);opacity:.2}50%{transform:scale(1);opacity:1}}
+.sway{transform-origin:50% 0;animation:sway 3s ease-in-out infinite alternate}
+@keyframes sway{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+.ecgp{fill:none;stroke:#fff;stroke-width:2.5;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 2.8s linear infinite}
+@keyframes draw{70%,100%{stroke-dashoffset:0}}
+.ring{width:84px;height:84px;border-radius:50%;background:var(--p-accent);color:var(--p-on);display:grid;place-items:center;margin:0 auto;animation:ringp 1.8s infinite}
+@keyframes ringp{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--p-accent) 60%,transparent)}100%{box-shadow:0 0 0 20px transparent}}
+.cloud{animation:drift 9s linear infinite alternate}@keyframes drift{to{transform:translateX(36px)}}
+.sun{animation:sun 4s ease-in-out infinite alternate}@keyframes sun{to{transform:translateY(-8px)}}
+.win{animation:glow 2.4s ease-in-out infinite alternate}@keyframes glow{from{opacity:.55}to{opacity:1}}
+.beam{transform-origin:50px 24px;animation:rock 3s ease-in-out infinite alternate}
+@keyframes rock{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+
+/* seções da agência */
+.band{border-top:1px solid var(--line);padding-block:64px}
+.band h2{font-weight:600;font-size:clamp(1.6rem,3.4vw,2.3rem);max-width:18em}
+.band .intro{color:var(--mute);max-width:36em;margin-top:12px}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:36px;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;border-top:2px solid var(--ink);padding-top:16px}
+.steps li::before{content:counter(s);font-family:var(--display);font-weight:600;font-size:1.6rem;display:block;margin-bottom:6px;background:linear-gradient(120deg,var(--a2),var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.steps h3{font-size:1.15rem;font-weight:600;margin-bottom:6px;letter-spacing:-.01em}
+.steps p,.feats p{color:var(--mute);font-size:.95rem}
+.feats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px 32px;margin-top:36px}
+.feats h3{font-size:1.02rem;font-weight:600;margin-bottom:4px;letter-spacing:-.01em}
+.ask{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:48px;align-items:start}
+.form{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:26px;display:grid;gap:16px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.checks{display:flex;flex-wrap:wrap;gap:8px 16px}
+.checks label{display:flex;align-items:center;gap:8px;font-size:.93rem;font-weight:400;margin:0}
+.checks input{width:18px;height:18px;accent-color:var(--accent)}
+.err{color:var(--danger);font-size:.9rem}
+.summary textarea{min-height:190px;font-size:.92rem;line-height:1.5;resize:vertical}
+footer{border-top:1px solid var(--line);padding-block:32px 40px}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+footer p{color:var(--mute);font-size:.9rem}
+
+@media (max-width:880px){
+  .hero,.ask{grid-template-columns:minmax(0,1fr);gap:40px}
+  .steps,.feats{grid-template-columns:minmax(0,1fr)}
+  .two{grid-template-columns:minmax(0,1fr)}
+  .nav a:not(.btn){display:none}
+  .band{padding-block:48px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.ecgp{stroke-dashoffset:0}.steam path{opacity:.7}}
+</style>
+
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+const { useState, useRef, useEffect } = React;
+const html = htm.bind(React.createElement);
+
+/* ---------- Ícones (traço, 24x24) ---------- */
+const c = (x, y, r) => `M${x - r} ${y}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0`;
+const IC = {
+  home: 'M3 11L12 3l9 8v10H3zM10 21v-6h4v6', list: 'M4 6H20M4 12H20M4 18H20', cal: 'M4 6H20V20H4zM4 10H20M8 3V7M16 3V7M8 14h2M14 14h2',
+  bag: 'M5 8H19L18 21H6zM9 8V6a3 3 0 0 1 6 0V8', chat: 'M4 5H20V16H9L4 20z', pin: 'M12 21s-6-6-6-11a6 6 0 0 1 12 0c0 5-6 11-6 11z' + c(12, 10, 2),
+  arrow: 'M5 12h14M13 6l6 6-6 6', back: 'M15 5l-7 7 7 7', fwd: 'M9 5l7 7-7 7', check: 'M5 12l5 5 9-10', photo: 'M3 6h18v13H3zM3 16l5-5 4 4 3-3 6 6' + c(16, 10, 1.5),
+  scissors: c(6, 7, 2.5) + c(6, 17, 2.5) + 'M8 8.5L20 17M8 15.5L20 7', razor: 'M6 8c0 7 2 12 6 12s6-5 6-12c-2 2-4 2-6 0-2 2-4 2-6 0zM9.5 14.5q2.5 2 5 0',
+  comb: 'M4 8h16v4H4zM6 12v6M9 12v6M12 12v6M15 12v6M18 12v6', brow: 'M3 13c3-5 15-5 18 0M3 9c4-3 14-3 18 0',
+  plate: c(12, 12, 8) + c(12, 12, 4), snack: 'M7 10l1 10h8l1-10zM9 10V4M12 10V3M15 10V5', cup: 'M7 4h10l-1.5 16h-7zM7.5 9h9',
+  paw: c(12, 15, 3.5) + c(6.5, 10, 1.6) + c(10, 6.5, 1.6) + c(14, 6.5, 1.6) + c(17.5, 10, 1.6),
+  tub: 'M3 12h18v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 12V6a2 2 0 0 1 4 0M5 19l-1 2M19 19l1 2', steth: 'M6 3v6a4 4 0 0 0 8 0V3M10 13v3a4 4 0 0 0 8 0v-2' + c(18, 12, 2),
+  drop: 'M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z', cross: 'M9 4h6v5h5v6h-5v5H9v-5H4V9h5z',
+  shirt: 'M8 4l-5 3 2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z', dress: 'M9 3v4l-2 3 2 2-4 9h14l-4-9 2-2-2-3V3M9 7h6',
+  pants: 'M7 3h10l1 18h-4l-2-11-2 11H6z', heart: 'M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z',
+  flask: 'M9 3h6M10 3v6l-5 10a1.5 1.5 0 0 0 1.4 2h11.2a1.5 1.5 0 0 0 1.4-2l-5-10V3M7.5 15h9', pulse: 'M3 12h4l2-6 4 12 2-6h6',
+  sparkle: 'M12 3l2 7 7 2-7 2-2 7-2-7-7-2 7-2z', wrench: 'M20 7a4 4 0 0 1-5.5 3.7L7 18.2a1.8 1.8 0 0 1-2.5-2.5L12 8.2A4 4 0 0 1 17 3l-2.5 2.5 1 2 2 1z',
+  wheel: c(12, 12, 9) + c(12, 12, 3) + 'M12 3v6M12 15v6M3 12h6M15 12h6', chip: 'M7 7h10v10H7zM10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4',
+  brush: 'M14 3l7 7-8 8-7-7zM6 11l-3 10 10-3', dumbbell: 'M3 9v6M6 6v12M18 6v12M21 9v6M6 12h12',
+  bike: c(6, 16, 3.5) + c(18, 16, 3.5) + 'M6 16l4-8h5l3 8M10 8H8M12 16l3-8', clip: 'M7 5h10v16H7zM10 3h4v4h-4zM10 11h4M10 15h4',
+  bread: 'M4 11a4 4 0 0 1 4-5h8a4 4 0 0 1 4 5v8H4zM9 6v4M13 6v4', cake: 'M4 20h16v-8H4zM4 15c2 2 4-2 8 0s6-2 8 0M12 12V7M12 4v1',
+  coffee: 'M5 8h11v6a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5zM16 10h2a2 2 0 0 1 0 5h-2M8 3v2M12 3v2', key: c(8, 15, 4) + 'M11 12l9-9M16 7l3 3',
+  brief: 'M3 8h18v12H3zM9 8V5h6v3M3 13h18', scale: 'M12 3v18M7 21h10M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z',
+  doc: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7', bolt: 'M13 2L5 14h6l-1 8 8-12h-6z', tap: 'M4 10h10a4 4 0 0 1 4 4v2M10 10V5M7 5h6M18 19v1',
+  hammer: 'M4 20l9-9M11 5l6 6 3-3-6-6z', user: c(12, 8, 3.5) + 'M5 20a7 7 0 0 1 14 0', users: c(9, 8, 3) + 'M3 20a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M17 14a6 6 0 0 1 4 6',
+  building: 'M5 21V4h9v17M14 9h5v12M8 8h3M8 12h3M8 16h3', award: c(12, 9, 5) + 'M9 13l-2 8 5-3 5 3-2-8', bottle: 'M10 3h4v4l2 3v11H8V10l2-3zM8 14h8',
+  clock: c(12, 12, 9) + 'M12 7v5l3 2', shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4', truck: 'M2 7h11v9H2zM13 10h5l3 3v3h-8z' + c(6, 17, 2) + c(17, 17, 2),
+  card: 'M3 6h18v12H3zM3 10h18', leaf: 'M5 19c0-9 5-14 15-14 0 10-5 15-14 15zM5 19l8-8',
+};
+const Ico = ({ n, s = 18 }) => html`<svg viewBox="0 0 24 24" width=${s} height=${s} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d=${IC[n] || IC.sparkle} /></svg>`;
+
+/* ---------- Ilustrações animadas: ocupam o lugar da foto até ela chegar ---------- */
+const Steam = () => html`<g className="steam"><path d="M46 34q-6-7 0-14t0-14" /><path d="M60 32q-6-7 0-14t0-14" /><path d="M74 34q-6-7 0-14t0-14" /></g>`;
+const ART = {
+  barbearia: () => html`<div className="pole"><i></i></div>`,
+  oficina: () => html`<svg viewBox="0 0 70 110" width="84" style=${{ display: 'block', margin: '0 auto' }}><g className="gear"><circle cx="35" cy="36" r="22" fill="none" stroke="#F2B90C" strokeWidth="10" strokeDasharray="8.64 8.64" /><circle cx="35" cy="36" r="19" fill="#F2B90C" /><circle cx="35" cy="36" r="7" fill="#0C0D0F" /></g><g className="gear rev"><circle cx="28" cy="84" r="14" fill="none" stroke="#fff" strokeWidth="8" strokeDasharray="7.33 7.33" /><circle cx="28" cy="84" r="12" fill="#fff" /><circle cx="28" cy="84" r="4.5" fill="#0C0D0F" /></g></svg>`,
+  academia: () => html`<div><svg viewBox="0 0 70 50" width="96" className="lift" style=${{ display: 'block', margin: '0 auto' }}><g fill="var(--p-accent)"><rect x="4" y="14" width="8" height="22" rx="2" /><rect x="12" y="8" width="8" height="34" rx="2" /><rect x="20" y="22" width="30" height="6" /><rect x="50" y="8" width="8" height="34" rx="2" /><rect x="58" y="14" width="8" height="22" rx="2" /></g></svg><div className="eq">${[0, 1, 2, 3, 4, 5].map((i) => html`<i key=${i} style=${{ animationDelay: i * 0.13 + 's' }}></i>`)}</div></div>`,
+  restaurante: () => html`<svg viewBox="0 0 120 108"><${Steam} /><ellipse cx="60" cy="74" rx="50" ry="30" fill="#fff" /><ellipse cx="60" cy="73" rx="37" ry="21" fill="none" stroke="#EADFD2" strokeWidth="2" /><ellipse cx="52" cy="70" rx="19" ry="11" fill="#D9822B" /><ellipse cx="52" cy="68" rx="13" ry="6.5" fill="#C8381F" /><ellipse cx="50" cy="67" rx="6" ry="3" fill="#F6E3A1" /><circle cx="78" cy="70" r="7" fill="#6FA34B" /><circle cx="84" cy="64" r="5" fill="#8BBF5C" /><ellipse cx="68" cy="82" rx="10" ry="5" fill="#FFF6DD" stroke="#EADFD2" /></svg>`,
+  padaria: () => html`<svg viewBox="0 0 120 100"><${Steam} /><path d="M16 88q-6-46 44-46t44 46z" fill="#E7B466" /><path d="M22 88q-4-36 38-38" fill="none" stroke="#F6D79B" strokeWidth="4" strokeLinecap="round" /><path d="M42 58l8 14M58 54l8 14M74 58l8 14" stroke="#8A4B12" strokeWidth="3.5" strokeLinecap="round" /><path d="M6 90h108" stroke="#fff" strokeWidth="5" strokeLinecap="round" /></svg>`,
+  salao: () => html`<div style=${{ position: 'relative' }}><div className="arch"><svg className="waves" viewBox="0 0 240 90" fill="none" stroke="rgba(255,255,255,.75)" strokeWidth="2.5" strokeLinecap="round"><path d="M0 14q15-12 30 0t30 0 30 0 30 0 30 0 30 0 30 0 30 0" /><path d="M0 38q15-12 30 0t30 0 30 0 30 0 30 0 30 0 30 0 30 0" /><path d="M0 62q15-12 30 0t30 0 30 0 30 0 30 0 30 0 30 0 30 0" /><path d="M0 86q15-12 30 0t30 0 30 0 30 0 30 0 30 0 30 0 30 0" /></svg></div>${[[2, 0, 0], [100, 30, .6], [6, 104, 1.1]].map(([l, t, d]) => html`<span key=${d} className="tw" style=${{ left: l, top: t, animationDelay: d + 's' }}><svg viewBox="0 0 24 24" width="16"><path d=${IC.sparkle} fill="currentColor" /></svg></span>`)}</div>`,
+  moda: () => html`<svg viewBox="0 0 100 150" className="sway"><path d="M50 14a5 5 0 1 1 5 5l-5 4M50 23L28 36h44z" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" /><path d="M38 36h24l4 22-6 8 22 74H18l22-74-6-8z" fill="rgba(255,255,255,.92)" /><path d="M40 66h20" stroke="rgba(0,0,0,.18)" strokeWidth="3" /></svg>`,
+  clinica: () => html`<svg viewBox="0 0 100 104"><rect x="22" y="8" width="56" height="56" rx="14" fill="var(--p-accent)" /><path d="M44 20h12v10h10v12H56v10H44V42H34V30h10z" fill="#fff" /><path className="ecgp" pathLength="1" d="M2 86h24l5-10 8 22 6-16 5 4h48" /></svg>`,
+  servicos: () => html`<div className="ring"><${Ico} n="wrench" s=${40} /></div>`,
+  imobiliaria: () => html`<svg viewBox="0 0 150 130" style=${{ borderRadius: 12 }}><rect width="150" height="130" fill="#1F3A2E" /><circle className="sun" cx="118" cy="36" r="14" fill="#D9B25A" /><g className="cloud" fill="rgba(255,255,255,.75)"><ellipse cx="26" cy="26" rx="18" ry="7" /><ellipse cx="40" cy="21" rx="11" ry="6" /></g><ellipse cx="75" cy="150" rx="120" ry="44" fill="#2F6B4A" /><rect x="40" y="62" width="70" height="48" fill="#F5F1EA" /><polygon points="32,64 75,30 118,64" fill="#D9B25A" /><rect x="68" y="84" width="14" height="26" fill="#1F3A2E" /><rect className="win" x="47" y="74" width="13" height="13" fill="#F6C453" /><rect className="win" x="90" y="74" width="13" height="13" fill="#F6C453" /></svg>`,
+  advocacia: () => html`<svg viewBox="0 0 100 86" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M50 12v62M32 76h36" /><g className="beam"><path d="M22 24h56M22 24l-11 22h22zM78 24l-11 22h22z" /><path d="M11 46a11 6 0 0 0 22 0M67 46a11 6 0 0 0 22 0" /></g><circle cx="50" cy="12" r="3" fill="currentColor" /></svg>`,
+};
+
+/* ---------- Segmentos: edite aqui textos, preços, cores e fotos ---------- */
+// item: [nome, descrição, preço, ícone, unidade]   ·   feat: [ícone, título, texto]
+const GOLD = '#D9B25A';
+const SEGMENTS = [
+  { id: 'barbearia', label: 'Barbearia', fallback: 'Sua Barbearia', tag: 'Barbearia', mode: 'agenda', ico: 'scissors',
+    photo: 'img/barbearia.jpg', photo2: 'img/barbearia2.jpg',
+    head: ['Seu visual', 'na régua'], sub: 'Barbearia de alto padrão para homens exigentes.', cta: 'Agendar horário',
+    svcTitle: 'Nossos serviços', svcSub: 'Profissionais especializados e produtos de alta qualidade.',
+    about: 'Cada detalhe importa. Nosso compromisso é com seu estilo, sua confiança e seu bem-estar.',
+    pro: ['Selecione o barbeiro', ['Lucas', 'Matheus', 'Rafael']], hours: 'Seg a sáb, 9h às 20h',
+    pal: { bg: '#0B0B0C', card: '#151516', ac: GOLD, ac2: '#2A2418' },
+    feats: [['award', 'Profissionais especializados', 'Experiência e qualidade'], ['bottle', 'Produtos premium', 'Os melhores do mercado'], ['cal', 'Agende online', 'Seu horário, sua comodidade']],
+    items: [['Corte Masculino', 'Corte moderno e personalizado', 45, 'scissors'], ['Barba Completa', 'Aparada e design para seu estilo', 35, 'razor'], ['Corte + Barba', 'Combo completo com desconto', 75, 'comb'], ['Sobrancelha', 'Acabamento na navalha', 15, 'brow'], ['Corte Infantil', 'Paciência com os pequenos', 35, 'scissors']] },
+  { id: 'restaurante', label: 'Restaurante', fallback: 'Seu Restaurante', tag: 'Restaurante', mode: 'pedido', ico: 'plate',
+    head: ['Sabor que', 'marca presença'], sub: 'Cozinha da casa, ingredientes frescos todos os dias.', cta: 'Ver cardápio',
+    svcTitle: 'Nosso cardápio', svcSub: 'Peça pelo site e retire ou receba em casa.',
+    about: 'Receitas de família, feitas na hora e servidas com o cuidado de quem cozinha para os seus.',
+    recv: ['Retirar no balcão', 'Entrega'], hours: 'Ter a dom, 11h30 às 23h',
+    pal: { bg: '#100B0A', card: '#1A1311', ac: '#E0B25C', ac2: '#5A1A14' },
+    feats: [['truck', 'Entrega própria', 'Rápida no seu bairro'], ['card', 'Pix ou cartão', 'Pague como preferir'], ['users', 'Reservas', 'Mesas para grupos']],
+    items: [['Parmegiana', 'Frango, arroz, fritas e salada', 42.9, 'plate'], ['Picanha na Chapa', 'Serve duas pessoas', 119, 'plate'], ['Feijoada', 'Completa, aos sábados', 54.9, 'plate'], ['Pastéis', 'Porção com 8 unidades', 32, 'snack'], ['Suco Natural', 'Jarra de 500 ml', 12, 'cup']] },
+  { id: 'petshop', label: 'Pet shop', fallback: 'Seu Pet Shop', tag: 'Pet shop', mode: 'agenda', ico: 'paw',
+    photo: 'img/petshop.jpg',
+    head: ['Seu pet merece', 'o melhor'], sub: 'Cuidado premium, carinho de verdade.', cta: 'Agendar banho e tosa',
+    svcTitle: 'Nossos serviços', svcSub: 'Tudo o que seu melhor amigo precisa em um só lugar.',
+    about: 'Aqui seu pet é tratado como família, por uma equipe treinada e apaixonada por bichos.',
+    hours: 'Seg a sáb, 8h às 18h',
+    pal: { bg: '#0B0D0D', card: '#141818', ac: GOLD, ac2: '#0F3B38' },
+    feats: [['shield', 'Confiança', 'Equipe treinada'], ['truck', 'Leva e traz', 'Buscamos no bairro'], ['heart', 'Carinho', 'Tratado como família']],
+    items: [['Banho e Tosa', 'Higiene completa com produtos premium', 89, 'tub', '/banho'], ['Consulta Veterinária', 'Saúde e bem-estar com especialistas', 120, 'steth', '/consulta'], ['Hotel Pet', 'Hospedagem confortável e segura', 95, 'home', '/diária'], ['Vacinação', 'Carteirinha sempre em dia', 90, 'cross'], ['Creche', 'Um dia inteiro de brincadeiras', 60, 'paw', '/dia']] },
+  { id: 'moda', label: 'Loja de roupas', fallback: 'Sua Loja', tag: 'Moda', mode: 'pedido', ico: 'dress',
+    head: ['Estilo para', 'todos os dias'], sub: 'Peças selecionadas e novidades toda semana.', cta: 'Ver coleção',
+    svcTitle: 'Nova coleção', svcSub: 'Monte sua sacola e finalize pelo WhatsApp.',
+    about: 'Curadoria de peças que vestem bem e duram. Atendimento de quem entende do seu estilo.',
+    recv: ['Retirar na loja', 'Receber em casa'], hours: 'Seg a sáb, 10h às 19h',
+    pal: { bg: '#FAF6F2', card: '#FFFFFF', ink: '#1E1A1C', ac: '#9A6B3F', ac2: '#C9A27E', on: '#fff', hero: '#1E1A1C', glow: '#5A4332' },
+    feats: [['truck', 'Envio nacional', 'Para todo o Brasil'], ['card', 'Parcelamos', 'No cartão de crédito'], ['check', 'Troca fácil', 'Em até 7 dias']],
+    items: [['Vestido Midi', 'Linho, do P ao GG', 189.9, 'dress'], ['Blusa de Tricô', 'Macia, do P ao G', 129.9, 'shirt'], ['Calça Wide Leg', 'Cintura alta, 36 ao 46', 159.9, 'pants'], ['Camisa de Linho', 'Masculina, P ao GG', 149.9, 'shirt'], ['Bolsa Tiracolo', 'Couro sintético', 99.9, 'bag']] },
+  { id: 'clinica', label: 'Clínica', fallback: 'Sua Clínica', tag: 'Clínica', mode: 'agenda', ico: 'steth',
+    head: ['Cuidar de você', 'é nossa rotina'], sub: 'Atendimento humano, com hora marcada.', cta: 'Marcar consulta',
+    svcTitle: 'Especialidades', svcSub: 'Agende sua consulta sem precisar ligar.',
+    about: 'Uma equipe que escuta com calma e explica com clareza, do primeiro contato ao retorno.',
+    pro: ['Selecione o profissional', ['Dra. Ana', 'Dr. Paulo', 'Dra. Lia']], hours: 'Seg a sex, 7h às 19h',
+    pal: { bg: '#F4F8FB', card: '#FFFFFF', ink: '#0F2437', ac: '#1F6FB5', ac2: '#7DB5E3', on: '#fff', hero: '#0F2437', glow: '#1F4E7A' },
+    feats: [['shield', 'Convênios', 'Os principais planos'], ['doc', 'Exames online', 'Resultados no celular'], ['clock', 'Sem espera', 'Hora marcada']],
+    items: [['Clínico Geral', 'Consulta de 30 minutos', 180, 'steth'], ['Dermatologia', 'Pele, cabelos e unhas', 220, 'sparkle'], ['Nutrição', 'Plano alimentar sob medida', 160, 'leaf'], ['Check-up', 'Exames laboratoriais', 240, 'flask'], ['Eletrocardiograma', 'Resultado no mesmo dia', 120, 'pulse']] },
+  { id: 'oficina', label: 'Oficina', fallback: 'Sua Oficina', tag: 'Centro automotivo', mode: 'agenda', ico: 'wrench',
+    head: ['Seu carro em', 'boas mãos'], sub: 'Mecânica de confiança, orçamento claro.', cta: 'Agendar revisão',
+    svcTitle: 'Nossos serviços', svcSub: 'Você aprova o orçamento antes de qualquer serviço.',
+    about: 'Explicamos o que seu carro precisa, mostramos a peça trocada e entregamos no prazo.',
+    hours: 'Seg a sex, 8h às 18h · sáb até 12h',
+    pal: { bg: '#0C0D0F', card: '#17191C', ac: '#F2B90C', ac2: '#2A2D33' },
+    feats: [['shield', 'Garantia', '90 dias no serviço'], ['check', 'Peças originais', 'Ou de primeira linha'], ['truck', 'Leva e traz', 'Buscamos seu carro']],
+    items: [['Troca de Óleo', 'Óleo e filtro inclusos', 189, 'drop'], ['Revisão Completa', 'Checklist de 40 itens', 420, 'clip'], ['Freios', 'Pastilhas dianteiras', 260, 'wrench'], ['Diagnóstico', 'Scanner eletrônico', 90, 'chip'], ['Alinhamento', 'Com balanceamento', 140, 'wheel']] },
+  { id: 'salao', label: 'Salão de beleza', fallback: 'Seu Salão', tag: 'Salão de beleza', mode: 'agenda', ico: 'sparkle',
+    head: ['Realce a sua', 'beleza'], sub: 'Cabelo, unhas e estética em um só lugar.', cta: 'Agendar horário',
+    svcTitle: 'Nossos serviços', svcSub: 'Escolha o serviço e a profissional de sua preferência.',
+    about: 'Um espaço para você relaxar enquanto cuidamos de cada detalhe do seu visual.',
+    pro: ['Selecione a profissional', ['Carla', 'Bia', 'Nina']], hours: 'Ter a sáb, 9h às 19h',
+    pal: { bg: '#140D10', card: '#1F1519', ac: '#E3A58F', ac2: '#4A2233' },
+    feats: [['award', 'Especialistas', 'Sempre atualizadas'], ['bottle', 'Linha profissional', 'Produtos de salão'], ['heart', 'Dia da noiva', 'Pacotes especiais']],
+    items: [['Corte Feminino', 'Com lavagem e finalização', 80, 'scissors'], ['Escova', 'Modelada ou lisa', 60, 'comb'], ['Coloração', 'Tons sob medida', 180, 'brush'], ['Manicure', 'Esmaltação tradicional', 35, 'sparkle'], ['Sobrancelha', 'Design personalizado', 45, 'brow']] },
+  { id: 'academia', label: 'Academia', fallback: 'Sua Academia', tag: 'Academia', mode: 'agenda', ico: 'dumbbell',
+    head: ['Seu treino', 'começa hoje'], sub: 'A primeira aula é por nossa conta.', cta: 'Aula experimental',
+    svcTitle: 'Modalidades', svcSub: 'Reserve sua vaga e venha conhecer o espaço.',
+    about: 'Estrutura completa e professores por perto para você treinar com segurança e resultado.',
+    pro: ['Selecione o professor', ['Bruno', 'Camila', 'Diego']], hours: 'Seg a sex, 6h às 22h · sáb 8h às 14h',
+    pal: { bg: '#0A0C0A', card: '#151A14', ac: '#B6E23A', ac2: '#243312', on: '#0A0C0A' },
+    feats: [['users', 'Professores', 'Em todos os horários'], ['check', 'Sem matrícula', 'Comece quando quiser'], ['clock', 'Abre cedo', 'Das 6h às 22h']],
+    items: [['Musculação', 'Aula experimental', 0, 'dumbbell'], ['Funcional', 'Turmas de 45 minutos', 35, 'bolt'], ['Spinning', 'Pedal com música', 35, 'bike'], ['Pilates', 'Turmas reduzidas', 45, 'heart'], ['Avaliação Física', 'Bioimpedância e medidas', 80, 'clip']] },
+  { id: 'padaria', label: 'Padaria e café', fallback: 'Sua Padaria', tag: 'Padaria e café', mode: 'pedido', ico: 'bread',
+    head: ['Pão quentinho', 'toda hora'], sub: 'Fornadas frescas da manhã à noite.', cta: 'Fazer pedido',
+    svcTitle: 'Do nosso forno', svcSub: 'Encomende pelo site e retire sem pegar fila.',
+    about: 'Massa descansada, forno aceso desde cedo e aquele café coado que perfuma a rua.',
+    recv: ['Retirar na loja', 'Entrega'], hours: 'Todos os dias, 6h às 20h',
+    pal: { bg: '#17100A', card: '#21170F', ac: '#E7B466', ac2: '#5A3414' },
+    feats: [['clock', 'Fornadas', 'A cada hora'], ['cake', 'Encomendas', 'Bolos e salgados'], ['coffee', 'Café', 'Coado na hora']],
+    items: [['Pão Francês', 'Quilo, sempre quentinho', 18.9, 'bread'], ['Pão de Queijo', 'Porção com 6 unidades', 14, 'bread'], ['Sonho de Creme', 'Recheio da casa', 8.5, 'cake'], ['Bolo de Cenoura', 'Fatia com cobertura', 9, 'cake'], ['Cappuccino', 'Cremoso, 200 ml', 11, 'coffee']] },
+  { id: 'imobiliaria', label: 'Imobiliária', fallback: 'Sua Imobiliária', tag: 'Imóveis', mode: 'agenda', ico: 'key',
+    head: ['O imóvel certo', 'para você'], sub: 'Compra e aluguel com quem conhece a cidade.', cta: 'Agendar visita',
+    svcTitle: 'Imóveis em destaque', svcSub: 'Escolha um imóvel e marque sua visita.',
+    about: 'Acompanhamos você da primeira visita à entrega das chaves, com toda a documentação.',
+    pro: ['Selecione o corretor', ['Marina', 'Otávio', 'Júlia']], hours: 'Seg a sáb, 9h às 18h',
+    pal: { bg: '#0B110F', card: '#141C19', ac: GOLD, ac2: '#1F3A2E' },
+    feats: [['award', 'Corretores', 'Credenciados'], ['card', 'Financiamento', 'Ajudamos em tudo'], ['doc', 'Documentação', 'Conferida por nós']],
+    items: [['Apto 2 Quartos', 'Centro · 68 m² · 1 vaga', 385000, 'building'], ['Casa com Quintal', 'Jardim · 140 m² · 2 vagas', 520000, 'home'], ['Studio Mobiliado', 'Centro · 32 m²', 1900, 'key', '/mês'], ['Sala Comercial', 'Avenida · 45 m²', 2400, 'building', '/mês']] },
+  { id: 'advocacia', label: 'Advocacia', fallback: 'Seu Escritório', tag: 'Advocacia', mode: 'agenda', ico: 'scale',
+    head: ['Seu direito,', 'bem defendido'], sub: 'Orientação clara, do começo ao fim.', cta: 'Agendar consulta',
+    svcTitle: 'Áreas de atuação', svcSub: 'Consulta presencial ou por vídeo.',
+    about: 'Explicamos seu caso em português claro e combinamos cada passo antes de agir.',
+    pro: ['Selecione o advogado', ['Dra. Helena', 'Dr. Marcos', 'Dra. Rita']], hours: 'Seg a sex, 9h às 18h',
+    pal: { bg: '#0A0F1C', card: '#131A2B', ac: '#C9A45C', ac2: '#1D2A4A' },
+    feats: [['shield', 'Sigilo', 'Em todas as conversas'], ['chat', 'Online', 'Ou presencial'], ['doc', 'Honorários', 'Combinados por escrito']],
+    items: [['Consulta Inicial', 'Entenda o seu caso', 150, 'scale'], ['Família', 'Divórcio e pensão', 200, 'users'], ['Trabalhista', 'Rescisão e direitos', 150, 'doc'], ['Empresarial', 'Abertura e sociedade', 250, 'brief'], ['Contratos', 'Análise e revisão', 300, 'doc']] },
+  { id: 'servicos', label: 'Serviços em geral', fallback: 'Seu Negócio', tag: 'Serviços', mode: 'agenda', ico: 'wrench',
+    head: ['Resolvemos', 'hoje mesmo'], sub: 'Reparos e instalações com garantia.', cta: 'Pedir orçamento',
+    svcTitle: 'Nossos serviços', svcSub: 'Agende a visita e receba o orçamento na hora.',
+    about: 'Chegamos no horário, deixamos tudo limpo e só cobramos o que foi combinado.',
+    hours: 'Seg a sáb, 8h às 18h',
+    pal: { bg: '#0B1116', card: '#141C23', ac: '#F59E0B', ac2: '#1C2B36' },
+    feats: [['check', 'Garantia', 'Por escrito'], ['clock', 'No mesmo dia', 'Atendimento rápido'], ['card', 'Orçamento', 'Sem compromisso']],
+    items: [['Visita Técnica', 'Diagnóstico no local', 80, 'clip'], ['Elétrica', 'Chuveiros e tomadas', 120, 'bolt'], ['Hidráulica', 'Vazamentos e entupimentos', 150, 'tap'], ['Montagem', 'Móveis e prateleiras', 140, 'hammer'], ['Pintura', 'Orçamento no local', 0, 'brush']] },
+];
+
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+const brl0 = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+const money = (v) => v === 0 ? 'Grátis' : (Number.isInteger(v) ? brl0 : brl).format(v);
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const TIMES = ['09:00', '10:30', '14:00', '15:30', '16:30', '18:00', '19:00', '20:30', '11:00', '12:00', '17:00', '21:00'];
+const TODAY = (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; })();
+
+function Logo({ size = 46 }) {
+  return html`<svg viewBox="0 0 48 48" width=${size} height=${size} aria-hidden="true">
+    <circle cx="24" cy="24" r="24" fill="var(--btn)" />
+    <g fill="none" stroke="var(--btn-ink)" strokeWidth="4.2">
+      <path d="M10.5 32 L20.5 11 L26.5 23.6" /><path d="M14.5 26.5 H31" />
+      <path d="M33.5 16 V29.5 a6.5 6.5 0 0 1 -12.4 2.6" strokeLinecap="round" />
+    </g></svg>`;
+}
+
+function Calendar({ value, onChange }) {
+  const [ym, setYm] = useState(() => new Date(TODAY.getFullYear(), TODAY.getMonth(), 1));
+  const first = new Date(ym.getFullYear(), ym.getMonth(), 1 - ym.getDay());
+  const weeks = Math.ceil((ym.getDay() + new Date(ym.getFullYear(), ym.getMonth() + 1, 0).getDate()) / 7);
+  const cells = Array.from({ length: weeks * 7 }, (_, i) => new Date(first.getFullYear(), first.getMonth(), first.getDate() + i));
+  const move = (n) => setYm(new Date(ym.getFullYear(), ym.getMonth() + n, 1));
+  const atStart = ym.getFullYear() === TODAY.getFullYear() && ym.getMonth() === TODAY.getMonth();
+  return html`<div className="cal">
+    <div className="mh"><button aria-label="Mês anterior" disabled=${atStart} onClick=${() => move(-1)}><${Ico} n="back" s=${15} /></button>
+      <span>${ym.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).replace(' de ', ' ')}</span>
+      <button aria-label="Próximo mês" onClick=${() => move(1)}><${Ico} n="fwd" s=${15} /></button></div>
+    <div className="g">${['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((d) => html`<span key=${d}>${d}</span>`)}
+      ${cells.map((d) => html`<button key=${d.getTime()} disabled=${d.getMonth() !== ym.getMonth() || d < TODAY || d.getDay() === 0}
+        aria-pressed=${!!value && d.getTime() === value.getTime()} onClick=${() => onChange(d)}>${d.getDate()}</button>`)}</div>
+  </div>`;
+}
+
+/* ---------- O celular ---------- */
+function Phone({ seg, name, photo }) {
+  const shown = name.trim() || seg.fallback;
+  const isCart = seg.mode === 'pedido';
+  const [view, setView] = useState('home');
+  const [svc, setSvc] = useState(0);
+  const [pro, setPro] = useState(0);
+  const [date, setDate] = useState(null);
+  const [time, setTime] = useState(null);
+  const [cart, setCart] = useState({});
+  const [recv, setRecv] = useState(0);
+  const [done, setDone] = useState(null);
+  const [menu, setMenu] = useState(false);
+  const [toast, setToast] = useState('');
+  const scroller = useRef(null);
+
+  useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(''), 2200); return () => clearTimeout(t); }, [toast]);
+
+  const go = (sec) => {
+    setMenu(false); setView('home');
+    setTimeout(() => {
+      const box = scroller.current, el = box && box.querySelector(`[data-sec="${sec}"]`);
+      if (box) box.scrollTo({ top: el ? el.offsetTop - 4 : 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    }, 40);
+  };
+  const openBook = (i) => { setMenu(false); setSvc(i || 0); setDate(null); setTime(null); setView('book'); };
+  const openMain = () => { setMenu(false); isCart ? setView('cart') : openBook(0); };
+  const add = (i, n) => setCart((o) => { const q = Math.max(0, (o[i] || 0) + n), r = { ...o }; if (q) r[i] = q; else delete r[i]; return r; });
+  const count = Object.values(cart).reduce((a, b) => a + b, 0);
+  const total = Object.entries(cart).reduce((a, [i, q]) => a + seg.items[i][2] * q, 0);
+  const pros = seg.pro ? ['Qualquer', ...seg.pro[1]] : null;
+
+  const confirmBook = () => {
+    const it = seg.items[svc];
+    setDone({ title: 'Agendamento Confirmado!', sub: 'Seu horário foi agendado com sucesso.', wa: ['Lembrete via WhatsApp', 'Enviaremos um lembrete 2 horas antes do seu horário.'], btn: 'Ver na agenda',
+      rows: [['cal', 'Data', date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }), cap(date.toLocaleDateString('pt-BR', { weekday: 'long' }))],
+        ['clock', 'Horário', time], [it[3], 'Serviço', it[0], money(it[2]) + (it[4] || '')],
+        ...(pros ? [['user', 'Profissional', pro === 0 ? 'Primeiro disponível' : pros[pro]]] : [])] });
+    setView('done');
+  };
+  const confirmCart = () => {
+    setDone({ title: 'Pedido Confirmado!', sub: 'Recebemos seu pedido e já estamos preparando.', wa: ['Acompanhe pelo WhatsApp', 'Avisaremos assim que seu pedido estiver pronto.'], btn: 'Acompanhar pedido',
+      rows: [['bag', 'Itens', Object.entries(cart).map(([i, q]) => q + '× ' + seg.items[i][0]).join(', ')], ['card', 'Total', brl.format(total)], ['pin', 'Recebimento', seg.recv[recv]]] });
+    setCart({}); setView('done');
+  };
+
+  const p = seg.pal, hbg = p.hero || p.bg;
+  const style = { '--p-bg': p.bg, '--p-card': p.card, '--p-ink': p.ink || '#F5F1EA', '--p-accent': p.ac, '--p-ac2': p.ac2, '--p-on': p.on || '#15120A', '--p-hbg': hbg, '--p-glow': p.glow || p.ac2, '--p-hero': `linear-gradient(160deg, ${p.ac2}, ${p.ac})` };
+  const heroImg = photo
+    ? { backgroundImage: `linear-gradient(90deg, rgba(0,0,0,.86), rgba(0,0,0,.2)), url(${photo})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : seg.photo ? { backgroundImage: `linear-gradient(90deg, ${hbg} 0%, ${hbg} 24%, transparent 72%), url(${seg.photo})`, backgroundSize: '100% 100%, auto 100%', backgroundPosition: '0 0, right center' } : null;
+  const img1 = photo || seg.photo2 || seg.photo;
+  const im = (src, icon) => html`<div className="im" style=${src ? { backgroundImage: `url(${src})` } : null}>${!src && html`<${Ico} n=${icon} s=${30} />`}</div>`;
+  const price = (it) => html`<span className="pr">${money(it[2])}${it[4] && html`<small>${it[4]}</small>`}</span>`;
+
+  const home = html`<div className="pscroll" ref=${scroller} key="home">
+    <div className=${'hero2' + (heroImg ? '' : ' noph')} style=${heroImg}>
+      ${!heroImg && ART[seg.id] && html`<div className="hart">${ART[seg.id]()}</div>`}
+      <h4>${seg.head[0]}<span>${seg.head[1]}</span></h4><p>${seg.sub}</p>
+      <button className="gold" onClick=${() => isCart ? go('itens') : openBook(0)}>${seg.cta}<${Ico} n="arrow" s=${15} /></button>
+    </div>
+
+    <div className="sect" data-sec="itens"><${Ico} n=${seg.ico} s=${24} /><div className="orn">${seg.svcTitle}</div><p>${seg.svcSub}</p></div>
+    <div className="hsc cards stag">${seg.items.map((it, i) => html`<div className="svc" key=${i} style=${{ '--i': i }}>
+      <${Ico} n=${it[3]} s=${32} /><strong>${it[0]}</strong>${price(it)}<span className="ds">${it[1]}</span>
+      ${isCart
+        ? (cart[i] ? html`<div className="stepper"><button aria-label="Remover um" onClick=${() => add(i, -1)}>−</button>${cart[i]}<button aria-label="Adicionar mais um" onClick=${() => add(i, 1)}>+</button></div>`
+          : html`<button className="outl" onClick=${() => add(i, 1)}>Adicionar</button>`)
+        : html`<button className="outl" onClick=${() => openBook(i)}>Agendar</button>`}
+    </div>`)}</div>
+
+    <div className="featrow">${seg.feats.map((f) => html`<div key=${f[1]}><${Ico} n=${f[0]} s=${24} /><strong>${f[1]}</strong><span>${f[2]}</span></div>`)}</div>
+
+    <div className="about"><div><h5 className="ttl">Sobre nós</h5><p>${seg.about}</p><button className="outl" onClick=${() => go('contato')}>Venha conhecer</button></div>${im(img1, seg.ico)}</div>
+
+    <div className="ready"><${Ico} n=${isCart ? 'bag' : 'cal'} s=${28} /><div><strong>${isCart ? 'Pronto para pedir?' : 'Pronto para agendar?'}</strong>
+      <p>${isCart ? 'Monte seu pedido em poucos toques.' : 'Escolha o melhor dia e horário para você.'}</p>
+      <button className="gold" onClick=${() => isCart ? go('itens') : openBook(0)}>${isCart ? 'Fazer pedido' : 'Fazer agendamento'}</button></div></div>
+
+    <div className="psec" data-sec="galeria"><h5 className="ttl">Galeria</h5>
+      <div className="hsc gal">${im(photo || seg.photo, 'photo')}${im(seg.photo2, seg.ico)}${im(null, 'photo')}${im(null, 'users')}</div></div>
+
+    <div className="psec" data-sec="contato"><h5 className="ttl">Contato</h5>
+      <div className="pinfo"><div><${Ico} n="clock" s=${22} /><span><small>Horário</small>${seg.hours}</span></div>
+        <div><${Ico} n="pin" s=${22} /><span><small>Endereço</small>Seu endereço, com mapa e rota</span></div></div>
+      <button className="wa" onClick=${() => setToast('Aqui abre o WhatsApp do seu negócio')}>Chamar no WhatsApp</button></div>
+    <div className="pfoot">${shown} · site por AJ STUDIO</div>
+  </div>`;
+
+  const book = html`<div className="pscroll" key="book">
+    <div className="vhead"><button aria-label="Voltar" onClick=${() => setView('home')}><${Ico} n="back" s=${20} /></button><h4>${seg.cta.startsWith('Agendar') ? 'Agendar Horário' : seg.cta}</h4></div>
+    <div className="step">1. Escolha o serviço</div>
+    <div className="hsc cards tight">${seg.items.map((it, i) => html`<button className="svc" key=${i} aria-pressed=${svc === i} onClick=${() => setSvc(i)}>
+      <${Ico} n=${it[3]} s=${28} /><strong>${it[0]}</strong>${price(it)}</button>`)}</div>
+    ${pros && html`<div><div className="step">2. ${seg.pro[0]}</div>
+      <div className="hsc pros">${pros.map((n, i) => html`<button className="pro" key=${n} aria-pressed=${pro === i} onClick=${() => setPro(i)}>
+        <span className="av">${i === 0 ? html`<${Ico} n="users" s=${22} />` : n.replace(/^Dra?\. /, '')[0]}</span>${n}<small>Disponível</small></button>`)}</div></div>`}
+    <div className="step">${pros ? '3. ' : '2. '}Selecione a data</div>
+    <${Calendar} value=${date} onChange=${setDate} />
+    <div className="step">Horários disponíveis</div>
+    <div className="times">${TIMES.map((t, i) => html`<button key=${t} disabled=${i > 7} aria-pressed=${time === t} onClick=${() => setTime(t)}>${t}</button>`)}</div>
+    <button className="gold bigbtn" disabled=${!date || !time} onClick=${confirmBook}><span><${Ico} n="cal" s=${20} />Confirmar Agendamento</span><${Ico} n="fwd" s=${16} /></button>
+  </div>`;
+
+  const cartView = html`<div className="pscroll" key="cart">
+    <div className="vhead"><button aria-label="Voltar" onClick=${() => setView('home')}><${Ico} n="back" s=${20} /></button><h4>Seu Pedido</h4></div>
+    ${count === 0 ? html`<div className="empty"><${Ico} n="bag" s=${40} /><p>Seu pedido está vazio.<br />Toque em “Adicionar” em qualquer item.</p></div>` : html`<div>
+      ${Object.entries(cart).map(([i, q]) => html`<div className="line" key=${i}>
+        <div><strong>${seg.items[i][0]}</strong><br /><span className="pr">${brl.format(seg.items[i][2] * q)}</span></div>
+        <div className="stepper"><button aria-label="Remover um" onClick=${() => add(i, -1)}>−</button>${q}<button aria-label="Adicionar mais um" onClick=${() => add(i, 1)}>+</button></div></div>`)}
+      <div className="step">Como prefere receber?</div>
+      <div className="times two">${seg.recv.map((r, i) => html`<button key=${r} aria-pressed=${recv === i} onClick=${() => setRecv(i)}>${r}</button>`)}</div>
+      <div className="total"><span>Total</span><span className="pr">${brl.format(total)}</span></div>
+      <button className="gold bigbtn" onClick=${confirmCart}><span><${Ico} n="check" s=${20} />Confirmar Pedido</span><${Ico} n="fwd" s=${16} /></button></div>`}
+  </div>`;
+
+  const doneView = done && html`<div className="pscroll" key="done"><div className="done">
+    <div className="okc"><${Ico} n="check" s=${32} /></div><h4>${done.title}</h4><p>${done.sub}</p>
+    <div className="rows stag">${done.rows.map((r, i) => html`<div key=${r[1]} style=${{ '--i': i }}><${Ico} n=${r[0]} s=${24} /><span><small>${r[1]}</small>${r[2]}${r[3] && html`<br />${r[3]}`}</span></div>`)}</div>
+    <div className="wac"><i><${Ico} n="chat" s=${18} /></i><span><strong>${done.wa[0]}</strong>${done.wa[1]}</span></div>
+    <button className="gold bigbtn" onClick=${() => setToast('Isto é uma simulação: nada foi enviado de verdade')}><span>${done.btn}</span><${Ico} n="arrow" s=${16} /></button>
+    <button className="lnk" onClick=${() => go('topo')}>Voltar ao Início</button>
+  </div></div>`;
+
+  return html`
+  <div className="phone" role="group" aria-label=${'Prévia do site de ' + shown}>
+    <div className="screen" style=${style}>
+      <div className="sbar"><span>9:41</span><span>5G ▮</span></div>
+      ${view === 'home' && html`<div className="phead">
+        <div className="wm"><${Ico} n=${seg.ico} s=${24} /><span><b>${shown}</b><small>${seg.tag}</small></span></div>
+        <button className="burger" aria-label="Abrir menu" onClick=${() => setMenu(true)}><${Ico} n="list" s=${22} /></button></div>`}
+
+      ${view === 'home' ? home : view === 'book' ? book : view === 'cart' ? cartView : doneView}
+
+      ${view === 'home' && isCart && count > 0 && html`<button className="cartbar" onClick=${() => setView('cart')}><span>Ver pedido · ${count} ${count === 1 ? 'item' : 'itens'}</span><span>${brl.format(total)}</span></button>`}
+
+      ${view === 'home' && html`<div className="tabbar">
+        <button className="on" onClick=${() => go('topo')}><${Ico} n="home" />Início</button>
+        <button onClick=${() => go('itens')}><${Ico} n=${seg.ico} />${isCart ? 'Produtos' : 'Serviços'}</button>
+        <button onClick=${openMain}><${Ico} n=${isCart ? 'bag' : 'cal'} />${isCart ? 'Pedido' + (count ? ' (' + count + ')' : '') : 'Agendar'}</button>
+        <button onClick=${() => go('galeria')}><${Ico} n="photo" />Galeria</button>
+        <button onClick=${() => go('contato')}><${Ico} n="chat" />Contato</button>
+      </div>`}
+
+      ${toast && html`<div className="toast" role="status">${toast}</div>`}
+
+      ${menu && html`<div className="pmenu">
+        <button className="x" aria-label="Fechar menu" onClick=${() => setMenu(false)}>×</button>
+        <button onClick=${() => go('topo')}>Início</button>
+        <button onClick=${() => go('itens')}>${seg.svcTitle}</button>
+        <button onClick=${openMain}>${isCart ? 'Meu pedido' : 'Agendar horário'}</button>
+        <button onClick=${() => go('galeria')}>Galeria</button>
+        <button onClick=${() => go('contato')}>Contato</button>
+      </div>`}
+    </div>
+  </div>`;
+}
+
+/* ---------- Página da agência ---------- */
+const WANTS = ['Agendamento online', 'Cardápio ou catálogo', 'Botão de WhatsApp', 'Mapa e horário', 'Galeria de fotos', 'Logo e identidade visual'];
+
+function App() {
+  const [name, setName] = useState('');
+  const [segId, setSegId] = useState('barbearia');
+  const [photo, setPhoto] = useState('');
+  const seg = SEGMENTS.find((s) => s.id === segId);
+  const [contact, setContact] = useState('');
+  const [phone, setPhone] = useState('');
+  const [wants, setWants] = useState(['Botão de WhatsApp']);
+  const [notes, setNotes] = useState('');
+  const [error, setError] = useState('');
+  const [summary, setSummary] = useState('');
+  const [copied, setCopied] = useState(false);
+  const sumRef = useRef(null), fileRef = useRef(null);
+
+  const pick = (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f || !f.type.startsWith('image/')) return;
+    const r = new FileReader(); r.onload = () => setPhoto(r.result); r.readAsDataURL(f);
+  };
+  const dropPhoto = () => { setPhoto(''); if (fileRef.current) fileRef.current.value = ''; };
+  const toggle = (w) => setWants((a) => a.includes(w) ? a.filter((x) => x !== w) : [...a, w]);
+  const submit = (e) => {
+    e.preventDefault();
+    if (!name.trim()) return setError('Diga o nome do seu estabelecimento.');
+    if (phone.replace(/\D/g, '').length < 10) return setError('Informe um WhatsApp com DDD para a gente responder.');
+    setError(''); setCopied(false);
+    setSummary([
+      'Pedido de site para a AJ STUDIO', '',
+      'Estabelecimento: ' + name.trim(), 'Segmento: ' + seg.label,
+      'Contato: ' + (contact.trim() || 'não informado'), 'WhatsApp: ' + phone.trim(),
+      'Quero no site: ' + (wants.length ? wants.join(', ') : 'ainda não sei'),
+      notes.trim() ? 'Observações: ' + notes.trim() : null,
+    ].filter((l) => l !== null).join('\n'));
+  };
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(summary); setCopied(true); }
+    catch (_) { if (sumRef.current) { sumRef.current.focus(); sumRef.current.select(); } }
+  };
+
+  return html`
+  <header className="wrap top">
+    <a className="brand" href="#simulador" aria-label="AJ STUDIO"><${Logo} /><span><b>AJ STUDIO</b><small>Branding & Web Design</small></span></a>
+    <nav className="nav">
+      <a href="#como-funciona">Como funciona</a><a href="#incluso">O que vem no site</a>
+      <a className="btn" href="#solicitar">Solicitar meu site</a>
+    </nav>
+  </header>
+
+  <main>
+    <section className="wrap hero" id="simulador">
+      <div>
+        <p className="slogan">Um novo olhar transforma seu negócio</p>
+        <h1>Veja o site do <em>${name.trim() || 'seu negócio'}</em> antes de pedir.</h1>
+        <p className="lede">Digite o nome, escolha o segmento e use o celular ao lado como se o site já fosse seu.</p>
+        <div className="builder">
+          <div className="field big">
+            <label htmlFor="biz">Como se chama o seu estabelecimento?</label>
+            <input id="biz" type="text" maxLength="40" autoComplete="organization" placeholder="Ex.: Barbearia do Zé" value=${name} onChange=${(e) => setName(e.target.value)} />
+          </div>
+          <div>
+            <span className="legend" id="seg-lbl">Qual é o seu segmento?</span>
+            <div className="chips" role="group" aria-labelledby="seg-lbl">
+              ${SEGMENTS.map((s) => html`<button key=${s.id} type="button" className="chip" aria-pressed=${s.id === segId} onClick=${() => setSegId(s.id)}>${s.label}</button>`)}
+            </div>
+          </div>
+          <div className="field">
+            <label htmlFor="foto">Tem uma foto do seu negócio? Veja ela no site (opcional)</label>
+            <input id="foto" ref=${fileRef} type="file" accept="image/*" onChange=${pick} />
+            <p className="note" style=${{ marginTop: 6 }}>A foto fica só no seu aparelho. ${photo && html`<button type="button" className="linkbtn" onClick=${dropPhoto}>Remover foto</button>`}</p>
+          </div>
+          <div className="actions"><a className="btn" href="#solicitar">Gostei, quero o meu</a></div>
+        </div>
+      </div>
+      <div className="stage">
+        <div className="orb" aria-hidden="true"></div>
+        <${Phone} key=${seg.id} seg=${seg} name=${name} photo=${photo} />
+        <p className="hint">Role a tela, deslize os serviços e faça ${seg.mode === 'pedido' ? 'um pedido' : 'um agendamento'} completo de teste. Textos e preços são exemplos.</p>
+      </div>
+    </section>
+
+    <section className="band" id="como-funciona"><div className="wrap">
+      <h2>Do esboço ao site no ar, em três passos.</h2>
+      <ol className="steps">
+        <li><h3>Você imagina</h3><p>Brinque com o simulador até o site ter a cara do seu negócio. Não precisa entender de tecnologia.</p></li>
+        <li><h3>A gente conversa</h3><p>Você envia o pedido e combinamos pelo WhatsApp seus serviços, fotos, cores e horários.</p></li>
+        <li><h3>Seu site entra no ar</h3><p>Publicamos com o seu endereço na internet e mostramos como atualizar preços e horários.</p></li>
+      </ol>
+    </div></section>
+
+    <section className="band" id="incluso"><div className="wrap">
+      <h2>O que vem no seu primeiro site.</h2>
+      <p className="intro">Tudo o que um cliente procura antes de sair de casa, na palma da mão.</p>
+      <div className="feats">
+        <div><h3>Feito para o celular</h3><p>É no celular que seu cliente procura você. O site abre rápido e cabe na tela.</p></div>
+        <div><h3>Agendamento ou pedido</h3><p>O cliente marca horário ou monta o pedido sozinho, a qualquer hora.</p></div>
+        <div><h3>WhatsApp a um toque</h3><p>Um botão sempre visível leva direto para a conversa com você.</p></div>
+        <div><h3>Mapa e horário</h3><p>Endereço com rota e horário de funcionamento sempre atualizados.</p></div>
+        <div><h3>A cara da sua marca</h3><p>Cores, logo e fotos do seu negócio. Se ainda não tem marca, criamos uma.</p></div>
+        <div><h3>Pronto para o Google</h3><p>Estrutura preparada para quem busca pelo seu serviço na sua cidade.</p></div>
+      </div>
+    </div></section>
+
+    <section className="band" id="solicitar"><div className="wrap ask">
+      <div>
+        <h2>Peça o site ${name.trim() ? 'de ' + name.trim() : 'do seu negócio'}.</h2>
+        <p className="intro">Conte o básico. A gente responde pelo WhatsApp com uma proposta, sem compromisso.</p>
+      </div>
+      <div>
+        <form className="form" onSubmit=${submit} noValidate>
+          <div className="two">
+            <div className="field"><label htmlFor="r-biz">Estabelecimento</label><input id="r-biz" type="text" maxLength="40" value=${name} onChange=${(e) => setName(e.target.value)} /></div>
+            <div className="field"><label htmlFor="r-seg">Segmento</label><select id="r-seg" value=${segId} onChange=${(e) => setSegId(e.target.value)}>${SEGMENTS.map((s) => html`<option key=${s.id} value=${s.id}>${s.label}</option>`)}</select></div>
+          </div>
+          <div className="two">
+            <div className="field"><label htmlFor="r-nome">Seu nome</label><input id="r-nome" type="text" autoComplete="name" value=${contact} onChange=${(e) => setContact(e.target.value)} /></div>
+            <div className="field"><label htmlFor="r-tel">WhatsApp</label><input id="r-tel" type="tel" inputMode="tel" autoComplete="tel" placeholder="(11) 90000-0000" value=${phone} onChange=${(e) => setPhone(e.target.value)} /></div>
+          </div>
+          <div>
+            <span className="legend">O que não pode faltar?</span>
+            <div className="checks">${WANTS.map((w, i) => html`<label key=${w} htmlFor=${'w' + i}><input id=${'w' + i} type="checkbox" checked=${wants.includes(w)} onChange=${() => toggle(w)} />${w}</label>`)}</div>
+          </div>
+          <div className="field"><label htmlFor="r-obs">Quer contar mais alguma coisa? (opcional)</label><textarea id="r-obs" rows="3" value=${notes} onChange=${(e) => setNotes(e.target.value)}></textarea></div>
+          ${error && html`<p className="err" role="alert">${error}</p>`}
+          <div className="actions"><button className="btn" type="submit">Montar meu pedido</button></div>
+        </form>
+        ${summary && html`<div className="form summary" style=${{ marginTop: 16 }}>
+          <div className="field"><label htmlFor="r-sum">Seu pedido está pronto</label><textarea id="r-sum" ref=${sumRef} readOnly value=${summary}></textarea></div>
+          <div className="actions"><button className="btn" type="button" onClick=${copy}>${copied ? 'Copiado' : 'Copiar pedido'}</button><span className="note">Copie e envie para a AJ STUDIO pelo WhatsApp.</span></div>
+        </div>`}
+      </div>
+    </div></section>
+  </main>
+
+  <footer><div className="wrap">
+    <a className="brand" href="#simulador"><${Logo} size=${36} /><span><b>AJ STUDIO</b><small>Branding & Web Design</small></span></a>
+    <p>Um novo olhar transforma seu negócio.</p>
+  </div></footer>`;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
+</script>

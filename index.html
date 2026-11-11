@@ -1,5 +1,11 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="AJ STUDIO — veja o site do seu negócio antes de pedir. Um novo olhar transforma seu negócio.">
+<meta name="theme-color" content="#FBF7F2">
 <title>AJ STUDIO</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap">
 <style>
 /* Layout: o simulador é o herói — formulário curto à esquerda, celular vivo à direita sobre a esfera da marca. */
@@ -19,7 +25,9 @@
   --btn:#F4EFE9; --btn-ink:#141218; --accent:#BC9AF2; --danger:#FF8A80; --device:#0B0A0D; color-scheme:dark }
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+img{max-width:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -212,6 +220,8 @@ footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:1
 footer p{color:var(--mute);font-size:.9rem}
 
 @media (max-width:880px){
+  .phone{width:min(360px,100%)}
+  .hero{padding-block:12px 48px}
   .hero,.ask{grid-template-columns:minmax(0,1fr);gap:40px}
   .steps,.feats{grid-template-columns:minmax(0,1fr)}
   .two{grid-template-columns:minmax(0,1fr)}
@@ -221,6 +231,8 @@ footer p{color:var(--mute);font-size:.9rem}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
+</head>
+<body>
 <div id="root"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
@@ -702,3 +714,5 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
 </script>
+</body>
+</html>
